@@ -1,0 +1,15 @@
+{
+   "manifest_version": 2,
+   "name": "Coins spread indicator",
+   "version": "0.1",
+   "description": "Shows spread of coins on some sites",
+   "icons": {
+       "128": "128.png"
+   },
+   "content_scripts": [
+       {
+           "matches": [ "<all_urls>" ],
+           "js": [ "app.js" ]
+       }
+   ]
+}
