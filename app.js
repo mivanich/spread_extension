@@ -36,45 +36,41 @@ function createSpreadContainer(spread) {
 }
 
 
-if (false && document.URL.startsWith("https://zoloto-md.ru/bullion-coins/")) { // TODO: uncomment
-    var labelSpread = document.createElement("label");
+if (document.URL.startsWith("https://zoloto-md.ru/")) {
+    var sellWrapper = document.getElementsByClassName("wrap_sale pi-col-lg-8");
+    var buyoutWrapper = document.getElementsByClassName("wrap_buy pi-col-lg-4");
     
-    var page = document.getElementById('page');
-    
-    var price_product = page.getElementsByClassName("product_price")[0]
-    var priceStr = price_product.childNodes[5].content; // THAT CAUSES ISSUE ON THE PAGES, DIFFERENT FROM PAGES WITH A SINGLE COIN
-    var sellPrice = parseInt(priceStr);
-    
-    var buyoutDiv = page.getElementsByClassName("js-price-buyout")[0];
-    
-    var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');
-    
-    var buyoutPrice = parseInt(byuoutValueStr);
-    
-    if (buyoutPrice && sellPrice) {
-        var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100
-        createSpreadContainer(spread);
+    if ((sellWrapper && sellWrapper.length > 0) && (buyoutWrapper && buyoutWrapper.length > 0)) {
+        sellWrapper = sellWrapper[0];
+        buyoutWrapper = buyoutWrapper[0];
+        var price_product = sellWrapper.getElementsByClassName("product_price")[0];
+        var priceItem = price_product.querySelector('[itemprop=price]');
+        if (!priceItem) {
+            console.log("price item for sell is not found");
+        } else {
+            var priceStr = priceItem.getAttribute("content");
+            var sellPrice = parseInt(priceStr);            
+            var buyoutDiv = buyoutWrapper.getElementsByClassName("js-price-buyout")[0];            
+            var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');            
+            var buyoutPrice = parseInt(byuoutValueStr);            
+            if (buyoutPrice && sellPrice) {
+                var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100
+                createSpreadContainer(spread);
+            } else {
+                createSpreadContainer(null);
+            }
+        }
     } else {
-        createSpreadContainer(null);
+        console.log("One of the sell or buyout wrappers is not found");
     }
 }
 
 
 if (document.URL.startsWith("https://zoloto-md.ru/")) {
-    /*var cssRule = document.styleSheets[2].cssRules[3455];
-    if (!cssRule) {
-        console.log("cssRule 3455 is not found");
-    } else {
-        cssRule.style.maxHeight = '240px'; // change constants!
-    }*/
-    
     var sheet = document.createElement('style')
-    sheet.innerHTML = ".product-list_item:hover .hover-price { max-height: 240px; }";
+    sheet.innerHTML = ".product-list_item:hover .hover-price { max-height: 240px; } .product_price2>span{display:inline-block;width:67%;text-align:left;font-size:24px;font-weight:700;padding-left:10px;color:#0460de} .product_price2>label{width:33%;text-align:right}.product-list_item .product_price2>label,.product-list_item .product_price2>span{display:block;width:100%;margin-top:5px;padding-left:20px;text-align:center}.product-list_item .product_price2>label:first-child{margin-top:0}   .product_price2>span{display:inline-block;width:67%;text-align:left;font-size:24px;font-weight:700;padding-left:10px;color:#0460de}.product_price2 span>span{font-size:16px;padding-left:5px}.pi-table .product_price2>div,.product_price2 span>div{display:inline}.pi-table .product_price2>span{width:auto;font-weight:400;font-size:12px;padding-left:4px;color:#666e70}";
+
     document.body.appendChild(sheet);
-    
-    var sheet2 = document.createElement('style')
-    sheet2.innerHTML = ".product_price2>span{display:inline-block;width:67%;text-align:left;font-size:24px;font-weight:700;padding-left:10px;color:#ff9112}";
-    document.body.appendChild(sheet2);
    
     
     var coins = document.getElementsByClassName("pi-col-lg-4 pi-col-md-4 pi-col-xs-6");
@@ -90,7 +86,6 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
             if (sellPriceStr && buyoutPriceStr) {
                 var sellPrice = parseInt(sellPriceStr.replace(" ", ""));
                 var buyoutPrice = parseInt(buyoutPriceStr.replace(" ", ""));
-                // console.log("sell: " + sellPrice + ", buy: " + buyoutPrice);
                 var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100;
                 console.log("Spread: " + spread.toFixed(2));
                 
@@ -107,18 +102,16 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
                 spreadGeneralContainer.appendChild(spreadValueGeneralContainer);
                 
                 var spreadActualValue = document.createElement("span");
-                spreadActualValue.setAttribute("class", "js-price-club2");
-                spreadActualValue.textContent = spread.toFixed(2) + " %";
+                spreadActualValue.setAttribute("class", "js-price2");
+                spreadActualValue.textContent = spread.toFixed(2);
                 spreadValueGeneralContainer.appendChild(spreadActualValue);
                 
-                // hoverPrice.firstElementChild.remove(); // TODO: maybe make something with it? 
-                
-                
+                var percentSymbolSpan = document.createElement("span");
+                percentSymbolSpan.textContent = " %";
+                spreadValueGeneralContainer.appendChild(percentSymbolSpan);
             } else {
                 console.log("Price not set: " + sellPriceStr + " | " + buyoutPriceStr);
             }
-            
-            //console.log("Coin " + i + ". Sell: " + sell.textContent + ", buyout " + (buyout ? buyout.textContent : "undefined"));
         }
     }
 }
