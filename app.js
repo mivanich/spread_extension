@@ -49,10 +49,14 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
             console.log("price item for sell is not found");
         } else {
             var priceStr = priceItem.getAttribute("content");
-            var sellPrice = parseInt(priceStr);            
-            var buyoutDiv = buyoutWrapper.getElementsByClassName("js-price-buyout")[0];            
-            var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');            
-            var buyoutPrice = parseInt(byuoutValueStr);            
+            var sellPrice = parseInt(priceStr);
+            var buyoutDiv = buyoutWrapper.getElementsByClassName("js-price-buyout")[0];
+            
+            var buyoutPrice = null;
+            if (buyoutDiv) {
+                var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');            
+                var buyoutPrice = parseInt(byuoutValueStr);
+            }
             if (buyoutPrice && sellPrice) {
                 var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100
                 createSpreadContainer(spread);
@@ -112,6 +116,64 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
             } else {
                 console.log("Price not set: " + sellPriceStr + " | " + buyoutPriceStr);
             }
+        }
+    }
+}
+
+function parseZolotoMdPrice(priceStr) {
+    try {
+        return parseInt(priceStr.replace(" ", ""));
+    } catch (e) {
+        return null;
+    }
+}
+
+if (document.URL.startsWith("https://zoloto-md.ru/")) {
+    var allAuxCoins = document.getElementsByClassName("js-product product-list_item");
+    if (allAuxCoins && allAuxCoins.length > 0) {
+        for (var i = 0; i < allAuxCoins.length; i++) {
+            var coin = allAuxCoins[i];
+            var buyoutElement = coin.getElementsByClassName("js-price-buyout");
+            var sellElement = coin.getElementsByClassName("js-price");
+            
+            if ((!buyoutElement || buyoutElement.length == 0) || (!sellElement || sellElement.length == 0)) {
+                continue;
+            }
+            buyoutElement = buyoutElement[0];
+            sellElement = sellElement[0];
+            
+            buyoutPriceStr = buyoutElement.textContent;
+            sellPriceStr = sellElement.textContent;
+            
+            var buyoutPrice = parseZolotoMdPrice(buyoutPriceStr);
+            var sellPrice = parseZolotoMdPrice(sellPriceStr);
+            
+            if (!buyoutPrice || !sellPrice) {
+                continue;
+            }
+            
+            var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100;
+            
+            var hoverPrice = sellElement.parentElement.parentElement.parentElement;
+            var spreadGeneralContainer = document.createElement("div");
+            spreadGeneralContainer.setAttribute("class", "product_price2");
+            hoverPrice.appendChild(spreadGeneralContainer);
+            
+            var spreadDescription = document.createElement("label");
+            spreadDescription.textContent = "Спред";
+            spreadGeneralContainer.appendChild(spreadDescription);
+            
+            var spreadValueGeneralContainer = document.createElement("span");
+            spreadGeneralContainer.appendChild(spreadValueGeneralContainer);
+            
+            var spreadActualValue = document.createElement("span");
+            spreadActualValue.setAttribute("class", "js-price2");
+            spreadActualValue.textContent = spread.toFixed(2);
+            spreadValueGeneralContainer.appendChild(spreadActualValue);
+            
+            var percentSymbolSpan = document.createElement("span");
+            percentSymbolSpan.textContent = " %";
+            spreadValueGeneralContainer.appendChild(percentSymbolSpan);
         }
     }
 }
