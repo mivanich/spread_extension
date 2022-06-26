@@ -1,7 +1,7 @@
 {
-   "manifest_version": 2,
+   "manifest_version": 3,
    "name": "Coins spread indicator",
-   "version": "0.1",
+   "version": "0.9",
    "description": "Shows spread of coins on some sites",
    "icons": {
        "128": "128.png"
