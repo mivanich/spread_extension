@@ -1,3 +1,7 @@
+function calcSpreadStr(sell, buyout) {
+    return ((sell - buyout) / buyout * 100).toFixed(2);
+}
+
 function createSpreadContainer(spread) {
     var pricesContainer = document.getElementsByClassName("pr-wrap product_price-box pi-row    product_price-box__discount")[0];
     pricesContainer = pricesContainer.firstElementChild;
@@ -173,6 +177,67 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
                 percentSymbolSpan.textContent = " %";
                 spreadValueGeneralContainer.appendChild(percentSymbolSpan);
             }
+        }
+    }    
+}
+
+//  document.getElementsByClassName('coins-tile__prices')
+if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
+    var sheet = document.createElement('style')
+    
+    sheet.innerHTML = ".card__table-spread td {color: #0460de;} .card_cell-spread .card_cell-spread {display: none;} @media (min-width: 1139px) and (max-width: 1919px) {.card__table-spread {width: 254px;}} @media only screen and (max-width: 610px) { .card_features .card__table-spread, .card_features .card__table-sale, .card_features .card__table-purchase { border: 1px solid #999; width: 100%; } .card_features .card__table-sale td, .card_features .card__table-spread td, .card_features .card__table-purchase td { padding: 0 3%; } .card_features .card__table-sale { margin-bottom: 20px; } .card_features .card__cell-award-val._empty {text-align: center;} .card_features .card__cell-award::before {top: 4px;} .card_features th.card__cell-state { padding-left: 9px; } }@media (min-width: 991px) and (max-width: 1279px) {.card_features .card__table-spread td,{ padding: 0 2%; } .card_features .card__table-spread .card__cell-cost { padding-left: 10%; }";
+    
+    document.body.appendChild(sheet);
+    
+    const cardMarket = document.querySelector('.card__market');
+    if (cardMarket) {
+        const sellTable = cardMarket.querySelector('.card__table-purchase');
+        const buyoutTable = cardMarket.querySelector('.card__table-sale');
+        
+        const sellElem = sellTable.querySelector('td.card__cell-cost');
+        const buyoutElem = buyoutTable.querySelector('td.card__cell-cost');
+        
+        let spreadTable = document.createElement('table');
+        spreadTable.className = 'card__table-spread';
+        cardMarket.appendChild(spreadTable);
+        
+        let thead = document.createElement('thead');
+        spreadTable.appendChild(thead);
+        
+        let th1 = document.createElement('th');
+        th1.textContent="Спред";
+        th1.className = 'card__cell-cost';
+        let th2 = document.createElement('th');
+        // th2.textContent="Спред за унцию";
+        th2.className = 'card__cell-award';
+        let th3 = document.createElement('th');
+        th3.textContent=' ';
+        let trHead = document.createElement('tr');
+        thead.appendChild(trHead);
+        trHead.appendChild(th1);
+        trHead.appendChild(th2);
+        trHead.appendChild(th3);
+        
+        let tbody = document.createElement('tbody');
+        spreadTable.appendChild(tbody);
+        let tr = document.createElement('tr');
+        tbody.appendChild(tr);
+        
+        let tdCoinSpred = document.createElement('td');
+        tdCoinSpred.className='card__cell-cost';
+        tr.appendChild(tdCoinSpred);
+        
+        let tdExchangeSpread = document.createElement('td');
+        tdExchangeSpread.className='card__cell-exchange-spread';
+        tr.appendChild(tdExchangeSpread);
+        
+        
+        if (sellElem && buyoutElem) {
+            const sellPrice = parseInt(sellElem.textContent.trim().replaceAll(' ', ''));
+            const buyoutPrice = parseInt(buyoutElem.textContent.trim().replaceAll(' ', ''));        
+            tdCoinSpred.textContent=calcSpreadStr(sellPrice, buyoutPrice) + "%";
+        } else {
+            tdCoinSpred.textContent="-";
         }
     }
 }
