@@ -185,7 +185,7 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
 if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
     var sheet = document.createElement('style')
     
-    sheet.innerHTML = ".card__table-spread td {color: #0460de;} .card_cell-spread .card_cell-spread {display: none;} @media (min-width: 1139px) and (max-width: 1919px) {.card__table-spread {width: 254px;}} @media only screen and (max-width: 610px) { .card_features .card__table-spread, .card_features .card__table-sale, .card_features .card__table-purchase { border: 1px solid #999; width: 100%; } .card_features .card__table-sale td, .card_features .card__table-spread td, .card_features .card__table-purchase td { padding: 0 3%; } .card_features .card__table-sale { margin-bottom: 20px; } .card_features .card__cell-award-val._empty {text-align: center;} .card_features .card__cell-award::before {top: 4px;} .card_features th.card__cell-state { padding-left: 9px; } }@media (min-width: 991px) and (max-width: 1279px) {.card_features .card__table-spread td,{ padding: 0 2%; } .card_features .card__table-spread .card__cell-cost { padding-left: 10%; }";
+    sheet.innerHTML = ".card__table-spread td {color: #0460de;} .card_cell-spread .card_cell-spread {display: none;} @media (min-width: 1139px) and (max-width: 1919px) {.card__table-spread {width: 254px;}} @media only screen and (max-width: 610px) { .card_features .card__table-spread, .card_features .card__table-sale, .card_features .card__table-purchase { border: 1px solid #999; width: 100%; } .card_features .card__table-sale td, .card_features .card__table-spread td, .card_features .card__table-purchase td { padding: 0 3%; } .card_features .card__table-sale { margin-bottom: 20px; } .card_features .card__cell-award-val._empty {text-align: center;} .card_features .card__cell-award::before {top: 4px;} .card_features th.card__cell-state { padding-left: 9px; } }@media (min-width: 991px) and (max-width: 1279px) {.card_features .card__table-spread td,{ padding: 0 2%; } .card_features .card__table-spread .card__cell-cost { padding-left: 10%; }} .coins-tile__price { display: inline-block; width: 50%; -webkit-box-sizing: border-box; box-sizing: border-box; } .coins-tile__price:nth-child(3n+1) { padding-right: 10px; text-align: right; } .coins-tile__price:nth-child(3n+1) .coins-tile__price-txt {text-align: right; }.coins-tile__price:nth-child(3n+2) {padding-right: 10px;text-align: center; } .coins-tile__price:nth-child(3n+2) .coins-tile__price-txt { text-align: center; } .coins-tile__price:nth-child(3n) .coins-tile__price-val { color: #0460de; } .coins-tile__price:nth-child(3n) .coins-tile__price-txt { text-align: center; } .coins-tile__price:first-child .coins-tile__price-val { color: #018714; } .coins-tile__price:nth-child(3n+2) { text-align: left; padding-left: 10px; } .coins-tile__price:nth-child(3n+2) .coins-tile__price-txt { text-align: left; } .coins-tile__price:nth-child(3n+2) .coins-tile__price-val { color: #f00; } .coins-tile__price .fa-rub, .coins-tile__price .fa-usd, .coins-tile__price .fa-eur { font-size: 19px; }";
     
     document.body.appendChild(sheet);
     
@@ -239,5 +239,48 @@ if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
         } else {
             tdCoinSpred.textContent="-";
         }
+    }
+    
+    let allCoins = document.getElementsByClassName('coins-tile__prices');
+    if (allCoins && allCoins.length > 0) {
+        console.log("Page of the coins catalog");
+        for (let i=0; i < allCoins.length; i++) {
+            let coin = allCoins[i];
+            let prices_rub = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-rur');
+            let prices_usd = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-usd');
+            let prices_eur = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-eur');
+            if (prices_rub) {
+                let sell = parseInt(prices_rub[0].textContent.trim().replaceAll(" ", ""));
+                let buyout = parseInt(prices_rub[1].textContent.trim().replaceAll(" ", ""));;
+                let spread_rur = get_zolotoy_zapas_spread(prices_rub);
+                let spread_usd = get_zolotoy_zapas_spread(prices_usd);
+                let spread_eur = get_zolotoy_zapas_spread(prices_eur);
+
+                let spreadDiv = document.createElement('div');
+                coin.appendChild(spreadDiv);
+                spreadDiv.className = 'coins-tile__price';
+                spreadDiv.innerHTML = 
+                    `
+                        <span class="coins-tile__price-txt">Спред</span>
+                        <div class="coins-tile__price-val js-only-currency-rur">
+                            ${spread_rur}%
+                        </div>
+                        <div class="coins-tile__price-val js-only-currency-usd hidden">
+                            ${spread_usd}%
+                        </div> 
+                        <div class="coins-tile__price-val js-only-currency-eur hidden">
+                            ${spread_eur}%
+                        </div>                 
+                    `
+            }
+        }
+    } else {
+        console.log("some other page");
+    }
+
+    function get_zolotoy_zapas_spread(pricesDivs) {
+        let sell = parseInt(pricesDivs[0].textContent.trim().replaceAll(" ", ""));
+        let buyout = parseInt(pricesDivs[1].textContent.trim().replaceAll(" ", ""));;
+        return calcSpreadStr(sell, buyout);
     }
 }
