@@ -288,19 +288,25 @@ if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
                 let spread_usd = get_zolotoy_zapas_spread(prices_usd);
                 let spread_eur = get_zolotoy_zapas_spread(prices_eur);
 
+                let currency = window.localStorage.getItem("currency");
+                
+                let rur_hidden = currency !== 'rur' ? 'hidden' : '';
+                let usd_hidden = currency !== 'usd' ? 'hidden' : '';
+                let eur_hidden = currency !== 'eur' ? 'hidden' : '';
+
                 let spreadDiv = document.createElement('div');
                 coin.appendChild(spreadDiv);
                 spreadDiv.className = 'coins-tile__price spread-inserted';
                 spreadDiv.innerHTML = 
                     `
                         <span class="coins-tile__price-txt">Спред</span>
-                        <div class="coins-tile__price-val js-only-currency-rur">
+                        <div class="coins-tile__price-val js-only-currency-rur ${rur_hidden}">
                             ${spread_rur}
                         </div>
-                        <div class="coins-tile__price-val js-only-currency-usd hidden">
+                        <div class="coins-tile__price-val js-only-currency-usd ${usd_hidden}">
                             ${spread_usd}
                         </div> 
-                        <div class="coins-tile__price-val js-only-currency-eur hidden">
+                        <div class="coins-tile__price-val js-only-currency-eur ${eur_hidden}">
                             ${spread_eur}
                         </div>                 
                     `
