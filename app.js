@@ -34,7 +34,7 @@ function createSpreadContainer(spread) {
         percentSymbolSpan.textContent = "%"
         spreadSpan.appendChild(percentSymbolSpan);
     } else {
-        divSpreadValue.textContent = "-";
+        divSpreadValue.textContent = "—";
         spreadSpan.appendChild(divSpreadValue);
     }
 }
@@ -234,53 +234,77 @@ if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
         
         if (sellElem && buyoutElem) {
             const sellPrice = parseInt(sellElem.textContent.trim().replaceAll(' ', ''));
-            const buyoutPrice = parseInt(buyoutElem.textContent.trim().replaceAll(' ', ''));        
-            tdCoinSpred.textContent=calcSpreadStr(sellPrice, buyoutPrice) + "%";
+            const buyoutPrice = parseInt(buyoutElem.textContent.trim().replaceAll(' ', ''));
+            if (!sellPrice || !buyoutPrice) {
+                tdCoinSpred.textContent="—";
+            } else {
+                tdCoinSpred.textContent=calcSpreadStr(sellPrice, buyoutPrice) + "%";
+            }
         } else {
-            tdCoinSpred.textContent="-";
+            tdCoinSpred.textContent="—";
         }
     }
     
     let allCoins = document.getElementsByClassName('coins-tile__prices');
     if (allCoins && allCoins.length > 0) {
         console.log("Page of the coins catalog");
-        for (let i=0; i < allCoins.length; i++) {
+        addSpreadValues(allCoins);
+
+        let prevTop = document.documentElement.scrollTop;
+        window.addEventListener("scroll", function() {
+            let currTop = document.documentElement.scrollTop;
+            const checkStep = 100;
+            if (currTop > prevTop + checkStep) {
+                prevTop = currTop;
+                let allCoinsAfterScroll = document.getElementsByClassName('coins-tile__prices');
+                addSpreadValues(allCoinsAfterScroll);
+            }
+        });
+    } else {
+        console.log("some other page");
+    }
+
+    function get_zolotoy_zapas_spread(pricesDivs) {
+        if (pricesDivs.length < 2) {
+            return "—";
+        }
+        let sell = parseInt(pricesDivs[0].textContent.trim().replaceAll(" ", ""));
+        let buyout = parseInt(pricesDivs[1].textContent.trim().replaceAll(" ", ""));;
+        return calcSpreadStr(sell, buyout) + "%";
+    }
+
+    function addSpreadValues(allCoins) {
+        for (let i = 0; i < allCoins.length; i++) {
             let coin = allCoins[i];
+            let hasSpread = coin.getElementsByClassName('spread-inserted');
+            if (hasSpread.length > 0) {
+                continue;
+            }
             let prices_rub = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-rur');
             let prices_usd = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-usd');
             let prices_eur = coin.querySelectorAll('.coins-tile__price-val.js-only-currency-eur');
             if (prices_rub) {
-                let sell = parseInt(prices_rub[0].textContent.trim().replaceAll(" ", ""));
-                let buyout = parseInt(prices_rub[1].textContent.trim().replaceAll(" ", ""));;
                 let spread_rur = get_zolotoy_zapas_spread(prices_rub);
                 let spread_usd = get_zolotoy_zapas_spread(prices_usd);
                 let spread_eur = get_zolotoy_zapas_spread(prices_eur);
 
                 let spreadDiv = document.createElement('div');
                 coin.appendChild(spreadDiv);
-                spreadDiv.className = 'coins-tile__price';
+                spreadDiv.className = 'coins-tile__price spread-inserted';
                 spreadDiv.innerHTML = 
                     `
                         <span class="coins-tile__price-txt">Спред</span>
                         <div class="coins-tile__price-val js-only-currency-rur">
-                            ${spread_rur}%
+                            ${spread_rur}
                         </div>
                         <div class="coins-tile__price-val js-only-currency-usd hidden">
-                            ${spread_usd}%
+                            ${spread_usd}
                         </div> 
                         <div class="coins-tile__price-val js-only-currency-eur hidden">
-                            ${spread_eur}%
+                            ${spread_eur}
                         </div>                 
                     `
             }
         }
-    } else {
-        console.log("some other page");
-    }
-
-    function get_zolotoy_zapas_spread(pricesDivs) {
-        let sell = parseInt(pricesDivs[0].textContent.trim().replaceAll(" ", ""));
-        let buyout = parseInt(pricesDivs[1].textContent.trim().replaceAll(" ", ""));;
-        return calcSpreadStr(sell, buyout);
     }
 }
