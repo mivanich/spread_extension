@@ -314,3 +314,39 @@ if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
         }
     }
 }
+
+if (document.URL.startsWith("https://igold.bg/")) {
+    const products = document.querySelectorAll('.kv__member-item');
+    if (products && products.length > 0) {
+        for (let i = 0; i < products.length; i++) {
+            let coin = products[i];
+            let prices = coin.querySelectorAll('.obnovi');
+            console.log(prices);
+            if (prices.length != 2) {
+                continue;
+            }
+            
+            let newSpan = document.createElement('span');
+            newSpan.classList.add('spread');
+            coin.querySelector('.kv__member-cat-right').querySelector('.ssp').appendChild(newSpan);
+
+            let buyout = parsePrice(prices[0].textContent);
+            let sell = parsePrice(prices[1].textContent);
+            
+            let spread = calcSpreadStr(sell, buyout);
+            console.log('buyout:', buyout, '; sell', sell, '; sread:', spread);
+            
+            if (!buyout || !sell) {
+                newSpan.textContent = 'Спред: —';
+            } else {
+                newSpan.textContent = 'Спред: ' + spread + '%';
+            }
+        }
+    }
+
+    function parsePrice(price) {
+        let currencyIndex = price.indexOf("лв.");
+        let priceValue = price.substring(0, currencyIndex + 1);
+        return parseInt(priceValue);
+    }
+}
