@@ -261,7 +261,7 @@ if (document.URL.startsWith("https://www.zolotoy-zapas.ru/")) {
             }
         });
     } else {
-        console.log("some other page");
+        console.log("Page is unknown or doesn't cointain coins");
     }
 
     function get_zolotoy_zapas_spread(pricesDivs) {
@@ -333,14 +333,39 @@ if (document.URL.startsWith("https://igold.bg/")) {
             let buyout = parsePrice(prices[0].textContent);
             let sell = parsePrice(prices[1].textContent);
             
-            let spread = calcSpreadStr(sell, buyout);
-            console.log('buyout:', buyout, '; sell', sell, '; sread:', spread);
-            
             if (!buyout || !sell) {
                 newSpan.textContent = 'Спред: —';
             } else {
+                let spread = calcSpreadStr(sell, buyout);
                 newSpan.textContent = 'Спред: ' + spread + '%';
             }
+        }
+    } else {
+        let pricesTable = document.querySelector('.multi_price_table');
+        if (pricesTable) {
+            let buyoutSpan = pricesTable.querySelector('.productUpdatePriceBuy');
+            let sellSpan = pricesTable.querySelector('.productUpdatePriceSell');
+            if (buyoutSpan && sellSpan) {
+                let buyout = parsePrice(buyoutSpan.textContent);
+                let sell = parsePrice(sellSpan.textContent);
+                if (buyout && sell) {
+                    let spread = calcSpreadStr(sell, buyout);
+                    let trElement = document.createElement('tr');
+                    trElement.innerHTML = 
+                                `
+                                    <tr style="color: #545151;">
+                                        <td>
+                                        <h2 class="ssp">Спред</h2>
+                                        </td>
+                                            <td style="padding-left: 14px"><span class="productUpdatePriceBuy">${spread}%</span></td>
+                                    </tr>
+                                `;
+                    let tbody = pricesTable.firstChild;
+                    tbody.appendChild(trElement);
+                }
+            }
+        } else {
+            console.log("Page is unknown or doesn't cointain coins");
         }
     }
 
