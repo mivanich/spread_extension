@@ -49,8 +49,8 @@ function parseZolotoMdPrice(priceStr) {
 
 if (document.URL.startsWith("https://zoloto-md.ru/")) {
     { // show value for a main coin on a page
-        var sellWrapper = document.getElementsByClassName("wrap_sale pi-col-lg-8");
-        var buyoutWrapper = document.getElementsByClassName("wrap_buy pi-col-lg-4");
+        var sellWrapper = document.getElementsByClassName("wrap_sale");
+        var buyoutWrapper = document.getElementsByClassName("wrap_buy");
         
         if ((sellWrapper && sellWrapper.length > 0) && (buyoutWrapper && buyoutWrapper.length > 0)) {
             sellWrapper = sellWrapper[0];
