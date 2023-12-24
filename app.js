@@ -357,7 +357,7 @@ if (document.URL.startsWith("https://igold.bg/")) {
                                         <td>
                                         <h2 class="ssp">Спред</h2>
                                         </td>
-                                            <td style="padding-left: 14px"><span class="productUpdatePriceBuy">${spread}%</span></td>
+                                            <td style="padding-left: 14px"><span class="spreadValue">${spread}%</span></td>
                                     </tr>
                                 `;
                     let tbody = pricesTable.firstChild;
