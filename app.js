@@ -47,6 +47,19 @@ function parseZolotoMdPrice(priceStr) {
     }
 }
 
+function getSellPrice(price_product) {
+    var priceItem = price_product.querySelector('[itemprop=price]');
+    if (!priceItem) {
+        var priceStr = price_product.querySelector("div").textContent.replace(/\s+/g, '');
+        var sellPrice = parseInt(priceStr);
+        return sellPrice;
+    } else {
+        var priceStr = priceItem.getAttribute("content");
+        var sellPrice = parseInt(priceStr);
+        return sellPrice;
+    }
+}
+
 if (document.URL.startsWith("https://zoloto-md.ru/")) {
     { // show value for a main coin on a page
         var sellWrapper = document.getElementsByClassName("wrap_sale");
@@ -56,25 +69,19 @@ if (document.URL.startsWith("https://zoloto-md.ru/")) {
             sellWrapper = sellWrapper[0];
             buyoutWrapper = buyoutWrapper[0];
             var price_product = sellWrapper.getElementsByClassName("product_price")[0];
-            var priceItem = price_product.querySelector('[itemprop=price]');
-            if (!priceItem) {
-                console.log("price item for sell is not found");
+            var sellPrice = getSellPrice(price_product);
+            var buyoutDiv = buyoutWrapper.getElementsByClassName("js-price-buyout")[0];
+            
+            var buyoutPrice = null;
+            if (buyoutDiv) {
+                var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');            
+                var buyoutPrice = parseInt(byuoutValueStr);
+            }
+            if (buyoutPrice && sellPrice) {
+                var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100
+                createSpreadContainer(spread);
             } else {
-                var priceStr = priceItem.getAttribute("content");
-                var sellPrice = parseInt(priceStr);
-                var buyoutDiv = buyoutWrapper.getElementsByClassName("js-price-buyout")[0];
-                
-                var buyoutPrice = null;
-                if (buyoutDiv) {
-                    var byuoutValueStr = buyoutDiv.firstChild.textContent.replace(" ", '');            
-                    var buyoutPrice = parseInt(byuoutValueStr);
-                }
-                if (buyoutPrice && sellPrice) {
-                    var spread = (sellPrice - buyoutPrice) / buyoutPrice * 100
-                    createSpreadContainer(spread);
-                } else {
-                    createSpreadContainer(null);
-                }
+                createSpreadContainer(null);
             }
         } else {
             console.log("One of the sell or buyout wrappers is not found");
