@@ -2,6 +2,17 @@ function calcSpreadStr(sell, buyout) {
     return ((sell - buyout) / buyout * 100).toFixed(2);
 }
 
+function calcSpreadCommaStr(sell, buyout) {
+    return ((sell - buyout) / buyout * 100).toLocaleString(
+      "de-DE",
+      {
+        useGrouping: true,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+      }
+    );;
+}
+
 function createSpreadContainer(spread) {
     var pricesContainer = document.getElementsByClassName("pr-wrap product_price-box pi-row    product_price-box__discount")[0];
     pricesContainer = pricesContainer.firstElementChild;
@@ -380,5 +391,49 @@ if (document.URL.startsWith("https://igold.bg/")) {
         let currencyIndex = price.indexOf(" €");
         let priceValue = price.substring(0, currencyIndex);
         return parseFloat(priceValue);
+    }
+}
+
+if (document.URL.startsWith("https://tavex.bg/")) {
+    const allPrices = document.querySelectorAll('.product__prices');
+    // document.querySelectorAll('.product__prices')[0].querySelector('.js-product-price-from').getAttribute('data-pricelist')
+    if (allPrices && allPrices.length > 0) {        
+        for (let i = 0; i < allPrices.length; i++) {
+            let coin = allPrices[i];
+            let productPricesFrom = coin.querySelector('.js-product-price-from')
+            if (!productPricesFrom) {
+                continue
+            }
+            let pricesJson = productPricesFrom.getAttribute('data-pricelist');
+            let parsedPrices = JSON.parse(pricesJson);
+            let buy = parsedPrices['buy'][0]['price'];
+            let sell = parsedPrices['sell'][0]['price'];
+            let spread = calcSpreadCommaStr(sell, buy);
+            console.log("spread:" + spread);
+
+            let spreadTxt = spread.toLocaleString(
+      "de-DE",
+      {
+        useGrouping: true,
+      }
+    );
+            let divElement = document.createElement('div');
+            divElement.innerHTML = 
+            `
+            <div class="product__price product__price--buy">
+                <span class="product__price-label">
+                    Спред
+                </span>
+                <span class="product__price-value h-price-flash js-product-price-buy">
+                    <span class="price" data-currency="€">
+                        <span class="price-amount" data-currency="€">
+                            <span class="price-amount-whole">${spread} %</span>
+                        </span>
+                    </span>
+                </span>
+            </div>
+            `;
+            coin.appendChild(divElement);
+        }
     }
 }
