@@ -329,16 +329,16 @@ if (document.URL.startsWith("https://igold.bg/")) {
             let coin = products[i];
             let prices = coin.querySelectorAll('.obnovi');
             console.log(prices);
-            if (prices.length != 2) {
+            if (prices.length != 4) {
                 continue;
             }
             
             let newSpan = document.createElement('span');
             newSpan.classList.add('spread');
-            coin.querySelector('.kv__member-cat-right').querySelector('.ssp').appendChild(newSpan);
+            coin.querySelector('.kv__member-cat-right').children[0].appendChild(newSpan);
 
-            let buyout = parsePrice(prices[0].textContent);
-            let sell = parsePrice(prices[1].textContent);
+            let buyout = parsePrice(prices[0].textContent); // prices[1] and prices[3] are in levs
+            let sell = parsePrice(prices[2].textContent);
             
             if (!buyout || !sell) {
                 newSpan.textContent = 'Спред: —';
@@ -348,10 +348,10 @@ if (document.URL.startsWith("https://igold.bg/")) {
             }
         }
     } else {
-        let pricesTable = document.querySelector('.multi_price_table');
+        let pricesTable = document.querySelector('.lg\\:memberheader__func-item');
         if (pricesTable) {
-            let buyoutSpan = pricesTable.querySelector('.productUpdatePriceBuy');
-            let sellSpan = pricesTable.querySelector('.productUpdatePriceSell');
+            let buyoutSpan = pricesTable.querySelectorAll('.productUpdatePriceBuy')[0];
+            let sellSpan = pricesTable.querySelectorAll('.productUpdatePriceSell')[0];
             if (buyoutSpan && sellSpan) {
                 let buyout = parsePrice(buyoutSpan.textContent);
                 let sell = parsePrice(sellSpan.textContent);
@@ -362,12 +362,12 @@ if (document.URL.startsWith("https://igold.bg/")) {
                                 `
                                     <tr style="color: #545151;">
                                         <td>
-                                        <h2 class="ssp">Спред</h2>
+                                        <h2 class="text-[25px] font-normal">Спред</h2>
                                         </td>
                                             <td style="padding-left: 14px"><span class="spreadValue">${spread}%</span></td>
                                     </tr>
                                 `;
-                    let tbody = pricesTable.firstChild;
+                    let tbody = pricesTable.children[0].children[0]
                     tbody.appendChild(trElement);
                 }
             }
@@ -377,8 +377,8 @@ if (document.URL.startsWith("https://igold.bg/")) {
     }
 
     function parsePrice(price) {
-        let currencyIndex = price.indexOf("лв.");
-        let priceValue = price.substring(0, currencyIndex + 1);
-        return parseInt(priceValue);
+        let currencyIndex = price.indexOf(" €");
+        let priceValue = price.substring(0, currencyIndex);
+        return parseFloat(priceValue);
     }
 }
