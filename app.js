@@ -401,22 +401,15 @@ if (document.URL.startsWith("https://tavex.bg/")) {
         for (let i = 0; i < allPrices.length; i++) {
             let coin = allPrices[i];
             let productPricesFrom = coin.querySelector('.js-product-price-from')
-            if (!productPricesFrom) {
-                continue
+            let spread = "-";
+            if (productPricesFrom) {
+                let pricesJson = productPricesFrom.getAttribute('data-pricelist');
+                let parsedPrices = JSON.parse(pricesJson);
+                let buy = parsedPrices['buy'][0]['price'];
+                let sell = parsedPrices['sell'][0]['price'];
+                spread = calcSpreadCommaStr(sell, buy) + " %";
             }
-            let pricesJson = productPricesFrom.getAttribute('data-pricelist');
-            let parsedPrices = JSON.parse(pricesJson);
-            let buy = parsedPrices['buy'][0]['price'];
-            let sell = parsedPrices['sell'][0]['price'];
-            let spread = calcSpreadCommaStr(sell, buy);
             console.log("spread:" + spread);
-
-            let spreadTxt = spread.toLocaleString(
-      "de-DE",
-      {
-        useGrouping: true,
-      }
-    );
             let divElement = document.createElement('div');
             divElement.innerHTML = 
             `
@@ -427,7 +420,7 @@ if (document.URL.startsWith("https://tavex.bg/")) {
                 <span class="product__price-value h-price-flash js-product-price-buy">
                     <span class="price" data-currency="€">
                         <span class="price-amount" data-currency="€">
-                            <span class="price-amount-whole">${spread} %</span>
+                            <span class="price-amount-whole">${spread}</span>
                         </span>
                     </span>
                 </span>
